@@ -1,0 +1,6 @@
+pyspark
+kafka-python
+elasticsearch
+cassandra-driver
+beautifulsoup4
+requests
