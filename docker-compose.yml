@@ -35,7 +35,9 @@ services:
       - esdata:/usr/share/elasticsearch/data
 
   spark:
-    image: spark:latest  # Confirma que esta es la imagen específica que quieres usar
+    build:
+      context: .
+      dockerfile: Dockerfile.spark  # Apunta al Dockerfile correcto
     container_name: spark
     depends_on:
       - kafka
@@ -49,8 +51,6 @@ services:
       - "8081:8081"
     volumes:
       - .:/app
-    command: >
-      bash -c "cd /app && python spark_kafka_consumer.py"
 
 volumes:
   esdata:

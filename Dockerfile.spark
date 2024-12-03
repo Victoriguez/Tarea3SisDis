@@ -1,0 +1,33 @@
+# Usar la imagen base de Spark de Bitnami
+FROM bitnami/spark:latest
+
+# Cambiar al usuario root para instalar paquetes adicionales si es necesario
+USER root
+
+# Instalar wget, Python3 y pip
+RUN apt-get update && \
+    apt-get install -y wget python3 python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Descargar e instalar el conector Kafka para Spark
+RUN wget https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.4.1/spark-sql-kafka-0-10_2.12-3.4.1.jar -P /opt/bitnami/spark/jars/
+
+# Descargar e instalar el cliente de Kafka
+RUN wget https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar -P /opt/bitnami/spark/jars/
+
+# Copiar las dependencias del proyecto
+COPY requirements.txt /app/requirements.txt
+
+# Instalar las dependencias de Python
+RUN pip3 install --no-cache-dir -r /app/requirements.txt
+
+# Copiar el código de la aplicación
+COPY . /app
+WORKDIR /app
+
+# Cambiar al usuario predeterminado de Spark (normalmente spark o nobody)
+USER 1001
+
+# Comando para ejecutar el script de Spark
+CMD ["python3", "spark_kafka_consumer.py"]
